@@ -1,0 +1,14 @@
+{
+  "name": "iotex-block-speed",
+  "version": "1.0.0",
+  "description": "A block speed measurement tool built for IOTEX.",
+  "main": "src/iotex-block-speed/server.js",
+  "scripts": {
+  },
+  "author": "Soptq",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "iotex-antenna": "^0.31.0-beta-rlp-25"
+  }
+}

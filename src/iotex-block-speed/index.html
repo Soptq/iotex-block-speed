@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IOTEX BlockSpeed Visualizer</title>
+    <style>
+        code {
+            font-weight: bold;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.0/dist/chart.min.js"></script>
+</head>
+<body>
+    <h1>IOTEX BlockSpeed Visualizer</h1>
+    <p>Before rendering this webpage, please firstly run the backend in the <code>iotex-tx-speed</code> folder by commanding <code>node server.js</code></p>
+    <div>
+        <span>Refresh Interval: </span><input name="updateInterval" type="text" maxlength="10" id="update-interval" value="60"/><span> Seconds</span>
+    </div>
+    <div><button onclick="setUpdate(_alert=true)">Set Interval</button></div>
+    <h3>Visualizer</h3>
+    <canvas id="blockspeed-visualizer" width="400" height="100"></canvas>
+    <script>
+        let chart, updateIntervalObj;
+        let x = [], y = [];
+
+        function initChart() {
+            chart = new Chart(document.getElementById("blockspeed-visualizer").getContext('2d'), {
+                type: "line",
+                data: {
+                    labels: x,
+                    datasets: [{
+                        label: "IOTEX Block Speed",
+                        data: y,
+                        fill: false,
+                        borderColor: "rgb(255, 99, 132)",
+                        cubicInterpolationMode: 'monotone',
+                        tension: 0.4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Time'
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Block Speed (ms)'
+                            },
+                        }
+                    }
+                },
+            })
+        }
+
+        function draw(data) {
+            x = []; y = [];
+            for (let [timestamp, deltaTime] of Object.entries(data)) {
+                x.push(timeConverter(parseFloat(timestamp) / 1000));
+                y.push(parseInt(deltaTime))
+            }
+            chart.data.labels = x;
+            chart.data.datasets[0].data = y;
+            chart.update();
+        }
+
+        function updateData() {
+            fetch("http://localhost:3000/tx/records").then(resp => {
+                return resp.json();
+            }).then(resp => {
+                draw(resp);
+            }).catch(() => {
+                console.error("data update failed. Please check if the backend is running properly.");
+            });
+        }
+
+        function timeConverter(UNIX_timestamp) {
+            var a = new Date(UNIX_timestamp * 1000);
+            var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            var year = a.getFullYear();
+            var month = months[a.getMonth()];
+            var date = a.getDate();
+            var hour = a.getHours();
+            var min = a.getMinutes();
+            var sec = a.getSeconds();
+            return date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec;
+        }
+
+        function setUpdate(_alert=false) {
+            let intervalSec = parseInt(document.getElementById("update-interval").value);
+            clearInterval(updateIntervalObj);
+            setInterval(updateData, intervalSec * 1000);
+            if (_alert) {
+                alert("Set successfully");
+            }
+        }
+        initChart();
+        setUpdate()
+        updateData();
+    </script>
+</body>
+</html>
