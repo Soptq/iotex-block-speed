@@ -7,7 +7,7 @@ Feature:
 * Light-weighted and easy to modified
 * Realtime monitoring (live)
 
-**Any suggestion or possible improvement on this project is welcomed and appreciated!**
+**Any suggestion or possible improvement on this project is welcomed and appreciated! You can create a issue to contact me!**
 
 ## Installation
 
