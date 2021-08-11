@@ -1,6 +1,6 @@
 # iotex-block-speed
 
-A block speed measurement tool built for IOTEX.
+A live block speed measurement tool built for IOTEX.
 
 Feature:
 
